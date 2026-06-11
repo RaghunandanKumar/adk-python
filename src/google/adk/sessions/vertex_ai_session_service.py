@@ -164,7 +164,7 @@ class VertexAiSessionService(BaseSessionService):
 
     config = {'session_state': state} if state else {}
     if session_id:
-      _validate_session_id(session_id)
+      session_id = _normalize_session_id(session_id)
       config['session_id'] = session_id
     config.update(kwargs)
     async with self._get_api_client() as api_client:
