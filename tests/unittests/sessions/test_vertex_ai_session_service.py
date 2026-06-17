@@ -1048,6 +1048,39 @@ async def test_create_session_with_custom_session_id(
 
 @pytest.mark.asyncio
 @pytest.mark.usefixtures('mock_get_api_client')
+@pytest.mark.parametrize(
+    'resource_name',
+    [
+        (
+            'projects/my-project/locations/global/collections/'
+            'default_collection/engines/my-app/sessions/custom_1'
+        ),
+        (
+            'projects/my-project/locations/us-central1/'
+            'reasoningEngines/123/sessions/custom_1'
+        ),
+    ],
+)
+async def test_create_session_accepts_fully_qualified_resource_name(
+    mock_api_client_instance: MockAsyncClient, resource_name: str
+):
+  session_service = mock_vertex_ai_session_service()
+
+  session = await session_service.create_session(
+      app_name='123', user_id='user', session_id=resource_name
+  )
+
+  assert session.id == 'custom_1'
+  assert session.app_name == '123'
+  assert session.user_id == 'user'
+  assert (
+      mock_api_client_instance.last_create_session_config['session_id']
+      == 'custom_1'
+  )
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures('mock_get_api_client')
 async def test_create_session_with_custom_config(mock_api_client_instance):
   session_service = mock_vertex_ai_session_service()
 
